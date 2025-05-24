@@ -99,7 +99,7 @@ var FunctionTable map[string]Function = map[string]Function {
 			}
 			return math.Sin(args1), nil
 		}
-		return 0, ArgumentError("sin only takes one argument")
+		return 0, ArgumentError("sin takes one argument")
 	},
 	"tan": func(args []Expr) (float64, error) {
 		if len(args) == 1 {
@@ -109,7 +109,7 @@ var FunctionTable map[string]Function = map[string]Function {
 			}
 			return math.Tan(args1), nil
 		}
-		return 0, ArgumentError("tan only takes one argument")
+		return 0, ArgumentError("tan takes one argument")
 	},
 	"acos": func(args []Expr) (float64, error) {
 		if len(args) == 1 {
@@ -119,7 +119,7 @@ var FunctionTable map[string]Function = map[string]Function {
 			}
 			return math.Acos(args1), nil
 		}
-		return 0, ArgumentError("acos only takes one argument")
+		return 0, ArgumentError("acos takes one argument")
 	},
 	"asin": func(args []Expr) (float64, error) {
 		if len(args) == 1 {
@@ -129,7 +129,7 @@ var FunctionTable map[string]Function = map[string]Function {
 			}
 			return math.Asin(args1), nil
 		}
-		return 0, ArgumentError("asin only takes one argument")
+		return 0, ArgumentError("asin takes one argument")
 	},
 	"atan": func(args []Expr) (float64, error) {
 		if len(args) == 1 {
@@ -139,7 +139,32 @@ var FunctionTable map[string]Function = map[string]Function {
 			}
 			return math.Atan(args1), nil
 		}
-		return 0, ArgumentError("atan only takes one argument")
+		return 0, ArgumentError("atan takes one argument")
+	},
+	"max": func(args []Expr) (float64, error) {
+		if len(args) == 2 {
+			arg1, err1 := args[0].Eval()
+			if err1 != nil {
+				return 0, err1
+			}
+			arg2, err2 := args[1].Eval()
+			if err2 != nil {
+				return 0, err2
+			}
+			return math.Max(arg1, arg2), nil
+		}
+		return 0, ArgumentError("max takes two arguments")
+	},
+	"min": func(args []Expr) (float64, error) {
+		if len(args) == 2 {
+			arg2, err := args[1].Eval()
+			arg1, err := args[0].Eval()
+			if err != nil {
+				return 0, err
+			}
+			return math.Min(arg1, arg2), nil
+		}
+		return 0, ArgumentError("min takes two arguments")
 	},
 }
 
@@ -157,7 +182,7 @@ func (fn FunctionNode) Eval() (float64, error) {
 		}
 		return ans, nil
 	}
-	return 0, fmt.Errorf("function does not exist")
+	return 0, fmt.Errorf("function %v does not exist", fn.Name)
 }
 
 type NumberNode float64

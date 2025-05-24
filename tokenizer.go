@@ -41,7 +41,7 @@ func Tokenize(input string) <-chan Token {
 				continue
 			}
 
-			if unicode.IsDigit(rune(input[i])) {
+			if unicode.IsDigit(rune(input[i])) || input[i] == '.' {
 				start := i
 				hasDot := false
 

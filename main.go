@@ -10,6 +10,7 @@ import (
 )
 
 var lastAnswer float64 = math.NaN()
+var terminal *term.Terminal
 
 func main() {
 	fd := int(os.Stdin.Fd())
@@ -23,7 +24,7 @@ func main() {
 		io.Writer
 	}{os.Stdin, os.Stdout}
 
-	terminal := term.NewTerminal(rw, ">")
+	terminal = term.NewTerminal(rw, ">")
 	for {
 		input, err := terminal.ReadLine()
 		if err != nil {
@@ -38,24 +39,36 @@ func main() {
 		if err != nil {
 			switch err.(type) {
 			case ClearError:
-				fmt.Fprint(terminal, "\x1b[2J\x1b[H")
+				Print("\x1b[2J\x1b[H")
 				continue
 			case ExitError:
 				term.Restore(fd, origState)
 				os.Exit(0)
 			default:
-				fmt.Fprintln(terminal, err.Error())
+				Println(err.Error())
 				continue
 			}
 		}
 		lastAnswer, err = ast.Eval()
 		if err != nil {
-			fmt.Fprintln(terminal, err)
+			Println(err)
 		} else {
-			fmt.Fprintln(terminal, lastAnswer)
+			Println(lastAnswer)
 		}
 	}
 	term.Restore(fd, origState)
 	fmt.Println()
+}
+
+func Println(a ...any) {
+	fmt.Fprintln(terminal, a...)
+}
+
+func Print(a ...any) {
+	fmt.Fprint(terminal, a...)
+}
+
+func Printf(format string, a ...any) {
+	fmt.Fprintf(terminal, format, a...)
 }
 

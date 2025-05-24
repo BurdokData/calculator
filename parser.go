@@ -109,7 +109,10 @@ func (p *Parser) parsePrimitive() (Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		val, _ := strconv.ParseFloat(num.Value, 64)
+		val, err := strconv.ParseFloat(num.Value, 64)
+		if err != nil {
+			return nil, err
+		}
 		ret = NumberNode(val)
 	} else if p.NextToken.Type == IDENTIFIER {
 		identifier, err := p.Eat(IDENTIFIER)
