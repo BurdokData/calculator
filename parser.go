@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"math"
 )
 
 type UnexpectedTokenError struct {
@@ -116,9 +117,6 @@ func (p *Parser) parsePrimitive() (Expr, error) {
 		ret = NumberNode(val)
 	} else if p.NextToken.Type == IDENTIFIER {
 		identifier, err := p.Eat(IDENTIFIER)
-		if err != nil {
-			return nil, err
-		}
 		_, err = p.Eat(LPAREN)
 		if err != nil {
 			return nil, err
@@ -142,7 +140,7 @@ func (p *Parser) parsePrimitive() (Expr, error) {
 			}
 		}
 		_, err = p.Eat(RPAREN)
-		if err != nil {
+		if err != nil && p.NextToken.Type != EOF {
 			return nil, err
 		}
 		ret = FunctionNode{Name: identifier.Value, Args: args}
@@ -163,10 +161,10 @@ func (p *Parser) parsePrimitive() (Expr, error) {
 		return nil, ExitError{}
 	} else if p.NextToken.Type == PI {
 		p.Eat(PI)
-		ret = NumberNode(3.14159)
+		ret = NumberNode(math.Pi)
 	} else if p.NextToken.Type == E {
 		p.Eat(E)
-		ret = NumberNode(2.71828)
+		ret = NumberNode(math.E)
 	} else {
 		return nil, UnexpectedTokenError{UnexpectedToken: p.NextToken.Type}
 	}
